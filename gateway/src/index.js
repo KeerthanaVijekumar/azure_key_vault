@@ -102,7 +102,7 @@ async function main() {
     });
 
     app.listen(PORT, () => {
-        console.log("Microservice is online.");
+        console.log("Microservice is online, welcome.");
     });
 }
 
