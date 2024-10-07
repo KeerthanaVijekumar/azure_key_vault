@@ -1,6 +1,5 @@
 # Create the Kubernetes cluster
 resource "azurerm_kubernetes_cluster" "cluster" {
-  count               = length(azurerm_resource_group.flixtubeazurekeyvault) > 0 ? 1 : 0
   name                = var.app_name
   location            = azurerm_resource_group.flixtubeazurekeyvault[0].location
   resource_group_name = azurerm_resource_group.flixtubeazurekeyvault[0].name
