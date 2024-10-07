@@ -1,12 +1,6 @@
 # Get the current Azure client configuration (tenant ID and client ID)
 data "azurerm_client_config" "current" {}
 
-# Define the resource group (add this if it's missing)
-resource "azurerm_resource_group" "flixtubeazurekeyvault" {
-  name     = var.app_name
-  location = var.location
-}
-
 # Check if the Key Vault exists
 data "azurerm_key_vault" "existing_kv" {
   name                = var.app_name
