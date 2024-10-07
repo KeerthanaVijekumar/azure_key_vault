@@ -22,6 +22,8 @@ resource "azurerm_kubernetes_cluster" "cluster" {
   identity {
     type = "SystemAssigned"
   }
+
+  depends_on = [azurerm_resource_group.flixtubeazurekeyvault]
 }
 
 
