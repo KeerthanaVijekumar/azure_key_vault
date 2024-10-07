@@ -27,9 +27,10 @@ resource "azurerm_kubernetes_cluster" "cluster" {
 
 # Assign Key Vault access to the AKS Managed Identity (Key Vault Secrets User)
 resource "azurerm_role_assignment" "keyvault_role_assignment" {
+  count               = length(azurerm_kubernetes_cluster.cluster) > 0 ? 1 : 0
   principal_id        = azurerm_kubernetes_cluster.cluster[count.index].identity[0].principal_id
   role_definition_name = "Key Vault Secrets User"
-  scope               = azurerm_key_vault.key_vault[count.index].id
+  scope               = azurerm_key_vault.key_vault[count.index].id  # Use [count.index] for the Key Vault
 
   depends_on = [
     azurerm_kubernetes_cluster.cluster,
