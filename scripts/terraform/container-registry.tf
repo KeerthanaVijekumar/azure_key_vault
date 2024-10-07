@@ -5,15 +5,19 @@ data "azurerm_container_registry" "existing_acr" {
 }
 
 
-# Create the container registry only if it does not exist
+# Create the container registry 
 resource "azurerm_container_registry" "container_registry" {
-  count               = length(data.azurerm_container_registry.existing_acr.id) == 0 ? 1 : 0
   name                = var.app_name
   resource_group_name = azurerm_resource_group.flixtubeazurekeyvault.name
   location            = var.location
   admin_enabled       = true
   sku                 = "Basic"
 
+  lifecycle {
+    create_before_destroy = true
+  }
+
   depends_on = [azurerm_resource_group.flixtubeazurekeyvault]
 }
+
 

@@ -8,20 +8,21 @@ data "azurerm_key_vault" "existing_kv" {
   depends_on          = [azurerm_resource_group.flixtubeazurekeyvault]
 }
 
-# Create the Key Vault only if it does not exist
+# Create the Key Vault 
 resource "azurerm_key_vault" "key_vault" {
-  count               = length(data.azurerm_key_vault.existing_kv.id) == 0 ? 1 : 0
   name                = var.app_name
   location            = var.location
   resource_group_name = azurerm_resource_group.flixtubeazurekeyvault.name
   sku_name            = "standard"
   tenant_id           = data.azurerm_client_config.current.tenant_id
 
-  depends_on = [azurerm_resource_group.flixtubeazurekeyvault]
+  lifecycle {
+    create_before_destroy = true
+  }
 
-  # Optional: Enable soft delete with retention policy
-  soft_delete_retention_days = 7
+  depends_on = [azurerm_resource_group.flixtubeazurekeyvault]
 }
+
 
 # Check if the service principal already exists using the client ID from the current Azure configuration
 data "azuread_service_principal" "existing_sp" {

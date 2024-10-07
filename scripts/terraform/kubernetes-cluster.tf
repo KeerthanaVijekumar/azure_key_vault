@@ -4,9 +4,8 @@ data "azurerm_kubernetes_cluster" "existing_cluster" {
   resource_group_name = azurerm_resource_group.flixtubeazurekeyvault.name
 }
 
-# Create the Kubernetes cluster only if it does not exist
+# Create the Kubernetes cluster 
 resource "azurerm_kubernetes_cluster" "cluster" {
-  count               = length(data.azurerm_kubernetes_cluster.existing_cluster.id) == 0 ? 1 : 0
   name                = var.app_name
   location            = var.location
   resource_group_name = azurerm_resource_group.flixtubeazurekeyvault.name
@@ -21,6 +20,10 @@ resource "azurerm_kubernetes_cluster" "cluster" {
 
   identity {
     type = "SystemAssigned"
+  }
+
+  lifecycle {
+    create_before_destroy = true
   }
 
   depends_on = [azurerm_resource_group.flixtubeazurekeyvault]
