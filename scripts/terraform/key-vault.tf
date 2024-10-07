@@ -29,20 +29,26 @@ data "azuread_service_principal" "existing_sp" {
   client_id = data.azurerm_client_config.current.client_id
 }
 
-# Create the Service Principal only if it does not exist
+# Create the Service Principal (with lifecycle to ignore changes)
 resource "azuread_service_principal" "example" {
-  count     = length(data.azuread_service_principal.existing_sp.id) == 0 ? 1 : 0
-  client_id = var.client_id  
+  client_id = var.client_id
+
+  lifecycle {
+    ignore_changes = [
+      # Ignore changes to attributes to avoid recreation issues
+      "app_role_assignment_required",
+      "app_role_ids",
+      # You can list other attributes here
+    ]
+  }
 }
 
 
-# Assign Key Vault Secrets User role to the Service Principal only if it does not exist
+# Assign Key Vault Secrets User role to the Service Principal
 resource "azurerm_role_assignment" "role_assignment" {
-  count               = length(data.azuread_service_principal.existing_sp.id) == 0 ? 1 : 0
-  principal_id        = coalesce(azuread_service_principal.example[count.index].id, data.azuread_service_principal.existing_sp.id)
+  principal_id        = coalesce(azuread_service_principal.example.id, data.azuread_service_principal.existing_sp.id)
   role_definition_name = "Key Vault Secrets User"
-  scope               = azurerm_key_vault.key_vault[0].id  # Reference the Key Vault by index 0
+  scope               = azurerm_key_vault.key_vault.id  # Reference the Key Vault directly without index
 
   depends_on = [azurerm_key_vault.key_vault]
 }
-
