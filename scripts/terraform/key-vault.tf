@@ -37,9 +37,10 @@ resource "azuread_service_principal" "example" {
 
 # Assign Key Vault Secrets User role to the Service Principal
 resource "azurerm_role_assignment" "role_assignment" {
-  principal_id        = coalesce(azuread_service_principal.example[0].id, data.azuread_service_principal.existing_sp.id)
+  principal_id = length(azuread_service_principal.example) > 0 ? azuread_service_principal.example[0].id : data.azuread_service_principal.existing_sp.id
   role_definition_name = "Key Vault Secrets User"
   scope               = azurerm_key_vault.key_vault.id  # Reference Key Vault directly
 
   depends_on = [azurerm_key_vault.key_vault]
 }
+
