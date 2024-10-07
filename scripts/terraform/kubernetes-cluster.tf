@@ -34,17 +34,6 @@ resource "azurerm_role_assignment" "keyvault_role_assignment" {
   depends_on = [azurerm_kubernetes_cluster.aks_cluster]
 }
 
-# Attaches the container registry to the cluster
-resource "azurerm_role_assignment" "role_assignment" {
-  count               = length(azurerm_kubernetes_cluster.cluster) > 0 && length(azurerm_container_registry.container_registry) > 0 ? 1 : 0
-
-  principal_id        = azurerm_kubernetes_cluster.cluster[0].kubelet_identity[0].object_id
-  role_definition_name = "AcrPull"
-  scope               = azurerm_container_registry.container_registry[0].id
-
-  depends_on = [azurerm_kubernetes_cluster.aks_cluster]
-}
-
 
 
 
