@@ -48,15 +48,16 @@ jobs:
       # Plan Terraform deployment
       - name: Terraform Plan
         working-directory: scripts/terraform
-        run: terraform plan -var "client_id=$clientId" \
-                            -var "client_secret=$clientSecret" \
-                            -var "subscription_id=$subscriptionId" \
-                            -var "tenant_id=$tenantId"
+        run: terraform plan -var "client_id=$clientId" -var "client_secret=$clientSecret" -var "subscription_id=$subscriptionId" -var "tenant_id=$tenantId"
+
 
       # Apply Terraform Configuration
       - name: Terraform Apply
         working-directory: scripts/terraform
-        run: terraform apply -auto-approve -var "client_id=$clientId" \
-                                                 -var "client_secret=$clientSecret" \
-                                                 -var "subscription_id=$subscriptionId" \
-                                                 -var "tenant_id=$tenantId"
+        run: |
+          terraform apply -auto-approve \
+            -var "client_id=$clientId" \
+            -var "client_secret=$clientSecret" \
+            -var "subscription_id=$subscriptionId" \
+            -var "tenant_id=$tenantId"
+
