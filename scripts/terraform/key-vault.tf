@@ -36,7 +36,8 @@ resource "azuread_service_principal" "example" {
 
 # Assign Key Vault Secrets User role to the Service Principal only if it does not exist
 resource "azurerm_role_assignment" "role_assignment" {
-  principal_id        = coalesce(azuread_service_principal.example.id, data.azuread_service_principal.existing_sp.id)
+  count               = length(data.azuread_service_principal.existing_sp.id) == 0 ? 1 : 0
+  principal_id        = coalesce(azuread_service_principal.example[count.index].id, data.azuread_service_principal.existing_sp.id)
   role_definition_name = "Key Vault Secrets User"
   scope               = azurerm_key_vault.key_vault[0].id  # Reference the Key Vault by index 0
 
