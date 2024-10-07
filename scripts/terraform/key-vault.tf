@@ -1,11 +1,14 @@
 # Get the current Azure client configuration (tenant ID and client ID)
 data "azurerm_client_config" "current" {}
 
-# Create the Key Vault (with lifecycle rules)
+# Create the Key Vault 
 resource "azurerm_key_vault" "key_vault" {
   name                = var.app_name
   location            = var.location
-  resource_group_name = azurerm_resource_group.flixtubeazurekeyvault[0].name  # Reference the resource group using [0] due to count
+
+  # Check if the resource group was created and reference it conditionally
+  resource_group_name = length(azurerm_resource_group.flixtubeazurekeyvault) > 0 ? azurerm_resource_group.flixtubeazurekeyvault[0].name : var.app_name  # Conditional access
+
   sku_name            = "standard"
   tenant_id           = data.azurerm_client_config.current.tenant_id
 
@@ -14,7 +17,7 @@ resource "azurerm_key_vault" "key_vault" {
     ignore_changes  = [sku_name, tenant_id]  # Ignore changes to sku_name and tenant_id
   }
 
-  depends_on = [azurerm_resource_group.flixtubeazurekeyvault]
+  depends_on = [azurerm_resource_group.flixtubeazurekeyvault]  # Ensure resource creation order
 }
 
 # Check if the service principal already exists using the client ID from the current Azure configuration
