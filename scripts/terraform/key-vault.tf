@@ -2,13 +2,6 @@
 data "azurerm_client_config" "current" {}
 
 # Check if the Key Vault exists
-data "azurerm_key_vault" "existing_kv" {
-  name                = var.app_name
-  resource_group_name = azurerm_resource_group.flixtubeazurekeyvault.name
-  depends_on          = [azurerm_resource_group.flixtubeazurekeyvault]
-}
-
-# Create the Key Vault 
 resource "azurerm_key_vault" "key_vault" {
   name                = var.app_name
   location            = var.location
@@ -17,11 +10,16 @@ resource "azurerm_key_vault" "key_vault" {
   tenant_id           = data.azurerm_client_config.current.tenant_id
 
   lifecycle {
-    create_before_destroy = true
+    ignore_changes = [
+      # Add attributes to ignore changes
+      sku_name,
+      tenant_id
+    ]
   }
 
   depends_on = [azurerm_resource_group.flixtubeazurekeyvault]
 }
+
 
 
 # Check if the service principal already exists using the client ID from the current Azure configuration
@@ -42,7 +40,6 @@ resource "azuread_service_principal" "example" {
     ]
   }
 }
-
 
 # Assign Key Vault Secrets User role to the Service Principal
 resource "azurerm_role_assignment" "role_assignment" {
