@@ -27,11 +27,11 @@ resource "azurerm_kubernetes_cluster" "cluster" {
 
 # Assign Key Vault access to the AKS Managed Identity (Key Vault Secrets User)
 resource "azurerm_role_assignment" "keyvault_role_assignment" {
-  principal_id        = azurerm_kubernetes_cluster.aks_cluster.identity[0].principal_id
+  principal_id        = azurerm_kubernetes_cluster.cluster.identity[0].principal_id
   role_definition_name = "Key Vault Secrets User"
-  scope               = azurerm_key_vault.my_keyvault.id
+  scope               = azurerm_key_vault.key_vault.id
 
-  depends_on = [azurerm_kubernetes_cluster.aks_cluster]
+  depends_on = [azurerm_kubernetes_cluster.cluster]
 }
 
 
