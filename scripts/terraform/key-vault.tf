@@ -4,7 +4,7 @@ data "azurerm_client_config" "current" {}
 # Check if the Key Vault exists
 data "azurerm_key_vault" "existing_kv" {
   name                = var.app_name
-  resource_group_name = azurerm_resource_group.flixtubeazurekeyvault[0].name
+  resource_group_name = azurerm_resource_group.flixtubeazurekeyvault.name
   depends_on          = [azurerm_resource_group.flixtubeazurekeyvault]
 }
 
@@ -13,7 +13,7 @@ resource "azurerm_key_vault" "key_vault" {
   count               = length(data.azurerm_key_vault.existing_kv.id) == 0 ? 1 : 0
   name                = var.app_name
   location            = var.location
-  resource_group_name = azurerm_resource_group.flixtubeazurekeyvault[count.index].name
+  resource_group_name = azurerm_resource_group.flixtubeazurekeyvault.name
   sku_name            = "standard"
   tenant_id           = data.azurerm_client_config.current.tenant_id
 
@@ -31,7 +31,7 @@ data "azuread_service_principal" "existing_sp" {
 # Create the Service Principal only if it does not exist
 resource "azuread_service_principal" "example" {
   count     = length(data.azuread_service_principal.existing_sp.id) == 0 ? 1 : 0
-  client_id = data.azurerm_client_config.current.client_id
+  application_id = data.azurerm_client_config.current.client_id  
 }
 
 # Assign Key Vault Secrets User role to the Service Principal only if it does not exist
