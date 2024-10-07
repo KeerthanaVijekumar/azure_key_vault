@@ -31,7 +31,7 @@ data "azuread_service_principal" "existing_sp" {
 # Create the Service Principal only if it does not exist
 resource "azuread_service_principal" "example" {
   count     = length(data.azuread_service_principal.existing_sp.id) == 0 ? 1 : 0
-  client_id = data.azurerm_client_config.current.client_id  # Correct field is `application_id`
+  client_id = data.azurerm_client_config.current.client_id
 }
 
 # Assign Key Vault Secrets User role to the Service Principal only if it does not exist
