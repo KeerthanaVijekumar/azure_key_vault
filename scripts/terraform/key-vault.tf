@@ -5,7 +5,7 @@ data "azurerm_client_config" "current" {}
 resource "azurerm_key_vault" "key_vault" {
   name                = var.app_name
   location            = var.location
-  resource_group_name = azurerm_resource_group.flixtubeazurekeyvault.name
+  resource_group_name = azurerm_resource_group.flixtubeazurekeyvault[0].name  # Reference the resource group using [0] due to count
   sku_name            = "standard"
   tenant_id           = data.azurerm_client_config.current.tenant_id
 
@@ -39,8 +39,7 @@ resource "azuread_service_principal" "example" {
 resource "azurerm_role_assignment" "role_assignment" {
   principal_id = length(azuread_service_principal.example) > 0 ? azuread_service_principal.example[0].id : data.azuread_service_principal.existing_sp.id
   role_definition_name = "Key Vault Secrets User"
-  scope               = azurerm_key_vault.key_vault.id  # Reference Key Vault directly
+  scope               = azurerm_key_vault.key_vault.id  # Reference the Key Vault directly
 
   depends_on = [azurerm_key_vault.key_vault]
 }
-
